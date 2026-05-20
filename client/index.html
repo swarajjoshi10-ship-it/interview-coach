@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intervyou.AI - Real-time Voice Interviewer</title>
+  
+  <!-- Premium Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="app-wrapper">
+    <!-- Top Branding & Status Bar -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-pulse"></div>
+        <h1>Intervyou<span>.AI</span></h1>
+        <span class="badge-beta">PRO</span>
+      </div>
+      
+      <div class="header-status">
+        <span class="status-indicator-dot disconnected"></span>
+        <span id="connection-status-text" class="status-text">Disconnected</span>
+      </div>
+    </header>
+
+    <!-- Main 3-Column Dashboard Grid -->
+    <main class="dashboard-grid">
+      
+      <!-- COLUMN 1: Setup & Profile (Left) -->
+      <section class="grid-column setup-column">
+        <div class="panel-header">
+          <div class="panel-icon">⚙️</div>
+          <h2>Interview Settings</h2>
+        </div>
+        
+        <div class="panel-content">
+          <!-- Transport Config -->
+          <div class="form-group">
+            <label for="transport-select" class="form-label">
+              <span>Streaming Protocol</span>
+              <span class="info-tag">WebRTC</span>
+            </label>
+            <div class="custom-select-wrapper">
+              <select id="transport-select">
+                <option value="daily">Daily Transport</option>
+                <option value="smallwebrtc">SmallWebRTC</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Bot Nature Config -->
+          <div class="form-group">
+            <label for="bot-nature-select" class="form-label">
+              <span>Interviewer Persona</span>
+            </label>
+            <div class="custom-select-wrapper">
+              <select id="bot-nature-select">
+                <option value="friendly">😊 Warm & Supportive (Friendly)</option>
+                <option value="decent" selected>💼 Professional & Fair (Decent)</option>
+                <option value="strict">🔥 Direct & Challenging (Strict)</option>
+              </select>
+            </div>
+            <p class="field-desc">Determines the AI's tone, pacing, and feedback style.</p>
+          </div>
+
+          <!-- Job Description Configuration -->
+          <div class="form-group">
+            <div class="form-label-row">
+              <label for="jd-textarea" class="form-label">Target Job Description (JD)</label>
+              <span id="char-counter" class="char-count">0 / 1500</span>
+            </div>
+            <textarea id="jd-textarea" placeholder="Paste the target role description here (min 50 chars)..." maxlength="1500"></textarea>
+            
+            <!-- Quick Fill Templates -->
+            <div class="templates-section">
+              <span class="templates-label">Quick fill:</span>
+              <div class="template-badges">
+                <button type="button" class="btn-template" data-role="react">React Dev</button>
+                <button type="button" class="btn-template" data-role="python">Python Dev</button>
+                <button type="button" class="btn-template" data-role="fullstack">AI Full Stack</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Tips Panel -->
+          <div class="tips-box">
+            <h4>💡 Interviewer Guidelines</h4>
+            <ul>
+              <li>The bot starts speaking as soon as it connects.</li>
+              <li>Ask for professional critical feedback at the end.</li>
+              <li>Keep answers concise; the bot adapts to your pace!</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- COLUMN 2: Live Room & Controls (Center) -->
+      <section class="grid-column live-column">
+        <div class="panel-header text-center justify-center">
+          <h2>Interviewer Stream</h2>
+        </div>
+
+        <div class="avatar-room-container">
+          <!-- Glowing Video Box -->
+          <div id="bot-video-container" class="glowing-container state-disconnected">
+            <!-- Custom Dynamic Visual Placeholder when not connected -->
+            <div class="video-placeholder">
+              <div class="placeholder-avatar-ring">
+                <div class="placeholder-avatar-core">🤖</div>
+              </div>
+              <h3>AI Bot Offline</h3>
+              <p>Setup the job details and click Connect to start the session</p>
+            </div>
+          </div>
+
+          <!-- Voice Waves activity visualization -->
+          <div class="speech-visualization-bar hidden" id="speech-visualizer">
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+          </div>
+
+          <!-- Media & Stream Action Bar -->
+          <div class="action-bar">
+            <button id="mic-btn" class="btn-control mic-disabled" disabled>
+              <span class="btn-icon">🎤</span>
+              <span id="mic-status">Mic is Off</span>
+            </button>
+            
+            <button id="connect-btn" class="btn-primary">
+              <span class="btn-icon">⚡</span>
+              <span>Connect</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- COLUMN 3: Conversational Logs (Right) -->
+      <section class="grid-column chat-column">
+        <div class="panel-header">
+          <div class="panel-icon">💬</div>
+          <h2>Live Transcript</h2>
+        </div>
+
+        <div class="transcript-wrapper">
+          <div id="conversation-log" class="conversation-scroll"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Developer Console (Collapsible / Sleek) -->
+    <footer class="console-footer">
+      <details class="console-wrapper" open>
+        <summary class="console-toggle">
+          <span class="console-title">🖥️ System Events & Latency Log</span>
+          <span class="console-toggle-icon">▼</span>
+        </summary>
+        <div class="console-content">
+          <div id="events-log" class="events-scroll"></div>
+        </div>
+      </details>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/app.js"></script>
+  <link rel="stylesheet" href="/src/style.css" />
+</body>
+
+</html>
